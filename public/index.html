@@ -1,0 +1,254 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>BelNavo tech</title>
+  <meta name="description" content="BelNavo tech service booking and payment platform." />
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--muted:#94a3b8;--accent:#7c3aed;--accent-2:#06b6d4;--glass:rgba(255,255,255,.04);--max-width:1100px;color-scheme:dark}
+    :root[data-theme='light']{--bg:#f8fafc;--card:#fff;--muted:#475569;--accent:#6d28d9;--accent-2:#0891b2;--glass:rgba(15,23,36,.04);color-scheme:light}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:Inter,system-ui;background:radial-gradient(1200px 600px at 10% 10%, rgba(124,58,237,.08), transparent),var(--bg);color:#e6eef8;padding:24px}
+    .container{max-width:1100px;margin:0 auto}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.02), transparent);padding:14px;border-radius:12px}
+    header{display:flex;gap:16px;align-items:center;justify-content:space-between;margin-bottom:20px;position:sticky;top:10px;z-index:20;backdrop-filter:blur(6px);background:linear-gradient(180deg,rgba(255,255,255,.02),transparent);border-radius:12px;padding:12px 16px}
+    .brand{display:flex;gap:12px;align-items:center;font-weight:700}
+    .logo{width:44px;height:44px;border-radius:10px;overflow:hidden;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center}.logo img{width:100%;height:100%;object-fit:cover;display:block}
+    nav ul{display:flex;gap:12px;list-style:none;padding:0;margin:0}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:8px;font-weight:600}
+    .actions{display:flex;gap:8px}
+    .btn{border:0;padding:10px 12px;border-radius:10px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;font-weight:700;cursor:pointer}
+    .ghost{background:transparent;border:1px solid rgba(255,255,255,.08);color:var(--muted);padding:8px 10px;border-radius:10px}
+    .pill{background:transparent;border:1px solid rgba(255,255,255,.08);color:var(--muted);padding:8px 12px;border-radius:999px;font-weight:600;cursor:pointer}
+    .pill.active{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;border-color:transparent}
+    .hidden{display:none!important}
+    .muted{color:var(--muted)}
+    .status{font-size:14px;color:var(--muted)}
+    .ok{color:#4ade80}
+    .error{color:#f87171}
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:20px}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    form{display:grid;gap:8px}
+    input,textarea,select{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:transparent;color:inherit}
+    .pricing{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+    .service-media{width:100%;height:130px;object-fit:cover;border-radius:10px}
+    .portfolio{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+    .portfolio-item{position:relative;min-height:220px;overflow:hidden;border-radius:12px;padding:14px;display:flex;flex-direction:column;justify-content:flex-end}
+    .portfolio-item img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55}
+    .overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(2,6,23,.1),rgba(2,6,23,.85))}
+    .content{position:relative;z-index:2}
+    .admin-list,.order-list{display:grid;gap:8px}
+    .toolbar{display:flex;gap:8px;flex-wrap:wrap}
+    .modal{position:fixed;inset:0;background:rgba(2,6,23,.72);display:none;align-items:center;justify-content:center;z-index:80;padding:20px}
+    .modal.open{display:flex}
+    .dialog{max-width:720px;width:100%;background:var(--card);border-radius:16px;padding:18px;box-shadow:0 20px 60px rgba(2,6,23,.65)}
+    .meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px}
+    @media(max-width:900px){.hero,.row{grid-template-columns:1fr}nav ul{display:none}}
+  </style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="brand"><div class="logo"><img src="/assets/belnavo-logo.png" alt="BelNavo tech logo"></div><div><div>BelNavo tech</div><small class="muted">Design - Web - Motion</small></div></div>
+    <nav><ul><li><a href="#home">Home</a></li><li><a href="#services">Services</a></li><li><a href="#work">Work</a></li><li><a href="#book">Book</a></li><li id="adminNav" class="hidden"><a href="#admin">Admin</a></li></ul></nav>
+    <div class="actions"><a class="ghost" href="https://www.instagram.com/belnavo.tech?igsh=MTBmMzhwMmhzbnR6eA%3D%3D&utm_source=qr" target="_blank" rel="noopener">Instagram</a><button id="themeToggle" class="ghost">Theme</button><button id="logoutBtn" class="btn hidden">Logout</button></div>
+  </header>
+
+  <section id="authSection" class="card" style="margin-bottom:16px">
+    <div class="toolbar"><button id="loginTab" class="btn" type="button">Login</button><button id="registerTab" class="ghost" type="button">Create account</button><button id="forgotTab" class="ghost" type="button">Forgot password</button></div>
+    <form id="loginForm" style="margin-top:10px"><input id="loginIdentifier" placeholder="Username or email" required><input id="loginPassword" type="password" placeholder="Password" required><button class="btn">Login</button></form>
+    <form id="registerForm" class="hidden" style="margin-top:10px"><div class="row"><input id="regFullName" placeholder="Full name" required><input id="regUsername" placeholder="Username" required></div><div class="row"><input id="regEmail" type="email" placeholder="Email" required><input id="regPhone" placeholder="Phone"></div><input id="regPassword" type="password" placeholder="Password (min 6 chars)" required><button class="btn">Create account</button></form>
+    <form id="verifyForm" class="hidden" style="margin-top:10px"><input id="verificationId" type="hidden"><input id="verifyCode" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="Enter 6-digit code" required><div class="toolbar"><button class="btn" type="submit">Verify email</button><button id="resendCode" class="ghost" type="button">Resend code</button></div><div class="muted" style="font-size:13px">Check your inbox for the authentication code from BelNavo tech.</div></form>
+    <form id="forgotForm" class="hidden" style="margin-top:10px"><input id="forgotIdentifier" placeholder="Username or email" required><button class="btn">Generate reset token</button><input id="resetToken" placeholder="Paste reset token"><input id="resetPassword" type="password" placeholder="New password"><button id="resetBtn" type="button" class="ghost">Reset password</button></form>
+    <div id="authMsg" class="status"></div>
+  </section>
+
+  <main id="appSection" class="hidden">
+    <section id="home" class="hero" style="margin-bottom:16px">
+      <div><h1 style="font-size:clamp(28px,4.5vw,56px);margin:0 0 10px">We build delightful digital products and now accept bookings online.</h1><p id="welcomeText" class="muted"></p></div>
+      <aside class="card"><h3 style="margin-top:0">Quick booking</h3><form id="quickForm"><input type="text" name="customerName" placeholder="Your name" required /><input type="email" name="email" placeholder="Email address" required /><input type="text" name="phone" placeholder="Phone / WhatsApp" /><select name="serviceId" id="quickService" required></select><button class="btn" type="submit">Create Booking</button></form><div id="quickMsg" class="status"></div></aside>
+    </section>
+
+    <section id="services" style="margin-bottom:16px"><h2>Services</h2><div id="servicesGrid" class="pricing"></div></section>
+
+    <section id="templates" style="margin-bottom:16px">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <h2 style="margin:0">Service Templates</h2>
+        <div class="toolbar">
+          <button class="pill active" data-template-filter="all">All</button>
+          <button class="pill" data-template-filter="starter-site">Web</button>
+          <button class="pill" data-template-filter="brand-motion">Branding</button>
+          <button class="pill" data-template-filter="ecommerce-store">E-commerce</button>
+        </div>
+      </div>
+      <div id="templateGrid" class="pricing" style="margin-top:12px"></div>
+    </section>
+
+    <section id="work" style="margin-bottom:16px">
+      <h2>Portfolio</h2>
+      <div class="portfolio">
+        <article class="portfolio-item"><img src="https://images.unsplash.com/photo-1518773553398-650c184e0bb3?auto=format&fit=crop&w=1200&q=70"><div class="overlay"></div><div class="content"><h3>Launchpad UI</h3><p>UI/UX dashboard workflow and product interface design.</p></div></article>
+        <article class="portfolio-item"><img src="https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&w=1200&q=70"><div class="overlay"></div><div class="content"><h3>Nova Identity</h3><p>Brand identity exploration and direction.</p></div></article>
+        <article class="portfolio-item"><img src="https://images.unsplash.com/photo-1618172193763-c511deb635ca?auto=format&fit=crop&w=1200&q=70"><div class="overlay"></div><div class="content"><h3>Wave Animations</h3><p>High-energy motion graphics package.</p></div></article>
+        <article class="portfolio-item"><img src="https://images.unsplash.com/photo-1557821552-17105176677c?auto=format&fit=crop&w=1200&q=70"><div class="overlay"></div><div class="content"><h3>Commerce Lite</h3><p>E-commerce flow and checkout UX.</p></div></article>
+      </div>
+    </section>
+
+    <section id="book" style="margin-bottom:16px">
+      <h2>Book & Bank Transfer</h2>
+      <div class="card" style="display:grid;grid-template-columns:1fr 320px;gap:12px">
+        <form id="checkoutForm"><div class="row"><input name="customerName" placeholder="Full name" required /><input name="email" type="email" placeholder="Email" required /></div><div class="row"><input name="phone" placeholder="Phone" /><input name="preferredDate" type="date" /></div><select id="checkoutService" name="serviceId" required></select><textarea name="brief" rows="5" placeholder="Tell us about your project"></textarea><button class="btn">Create Order</button><div id="checkoutMsg" class="status"></div></form>
+        <aside><h4 style="margin:0 0 6px">Payment details</h4><p id="bankInfo" class="muted"></p><form id="transferForm"><input id="orderIdInput" name="orderId" placeholder="Order ID" required /><input name="payerName" placeholder="Payer account name" required /><input name="senderAccount" placeholder="Sender account number" /><input name="receiptUrl" placeholder="Receipt URL (optional)" /><textarea name="proofNote" rows="3" placeholder="Transfer note"></textarea><button class="btn">I Have Paid</button><div id="payMsg" class="status"></div></form></aside>
+      </div>
+    </section>
+
+    <section class="card" style="margin-bottom:16px">
+      <h3 style="margin-top:0">Profile</h3>
+      <div class="row"><input id="pfName" placeholder="Full name"><input id="pfPhone" placeholder="Phone"></div>
+      <div class="row" style="margin-top:8px"><input id="currentPw" type="password" placeholder="Current password"><input id="newPw" type="password" placeholder="New password"></div>
+      <div class="toolbar" style="margin-top:8px"><button id="saveProfile" class="btn">Save Profile</button><button id="changePw" class="ghost">Change Password</button></div>
+      <div id="mustChange" class="status error hidden"></div>
+      <div id="profileMsg" class="status"></div>
+    </section>
+
+    <section id="admin" class="hidden" style="margin-bottom:16px">
+      <h2>Admin Dashboard</h2>
+      <div class="card">
+        <div class="row"><input id="fq" placeholder="Search code/name/email/user"><select id="fstatus"><option value="">All status</option><option>new</option><option>in_progress</option><option>confirmed</option><option>delivered</option><option>closed</option><option>cancelled</option><option>unpaid</option><option>paid</option></select></div>
+        <div class="row" style="margin-top:8px"><input id="ffrom" type="date"><input id="fto" type="date"></div>
+        <div class="toolbar" style="margin-top:8px"><button id="applyFilter" class="ghost">Apply Filters</button><button id="backupNow" class="ghost">Backup Now</button><a class="ghost" href="/api/admin/orders/export.csv" target="_blank">Export CSV</a></div>
+        <div id="adminMsg" class="status"></div>
+        <div class="toolbar" style="margin-top:8px"><span id="emailStatus" class="status"></span></div>
+        <div id="statsGrid" class="pricing"></div>
+        <h3>Users</h3>
+        <div class="toolbar" style="margin-bottom:8px"><input id="userSearch" placeholder="Search users by name, username, email, phone" /><button id="userSearchBtn" class="ghost" type="button">Search Users</button><button id="refreshUsers" class="ghost" type="button">Refresh Users</button></div>
+        <div id="usersCount" class="status"></div>
+        <div id="usersList" class="admin-list"></div>
+        <h3>Monthly Analytics</h3><div id="analytics" class="admin-list"></div>
+        <h3>Orders</h3><div id="adminOrders" class="admin-list"></div>
+        <h3>Audit Logs</h3><div id="auditLogs" class="admin-list"></div>
+      </div>
+    </section>
+
+    <section id="track" style="margin-bottom:16px"><h2>Track booking</h2><div class="card"><div class="toolbar" style="margin-bottom:8px"><button id="refreshTrack" class="ghost" type="button">Refresh Tracking</button><span class="muted" id="trackMeta"></span></div><div id="trackMsg" class="status"></div><div id="ordersList" class="order-list"></div></div></section>
+    <section style="margin-bottom:16px"><h2>Notifications</h2><div class="card"><div id="notes" class="order-list"></div></div></section>
+    <section class="card"><h3 style="margin-top:0">Legal</h3><p class="muted">Privacy: We use data only for service delivery and support.</p><p class="muted">Terms: Orders are processed after payment verification.</p><p class="muted">Refund Policy: Refund requests are reviewed case-by-case.</p></section>
+  </main>
+
+  <footer class="card" style="margin-top:18px"><div class="muted">©2026 BelNavo tech - Email: <a class="muted" href="mailto:belnavo.tech@gmail.com">belnavo.tech@gmail.com</a> - Instagram: <a class="muted" href="https://www.instagram.com/belnavo.tech?igsh=MTBmMzhwMmhzbnR6eA%3D%3D&utm_source=qr" target="_blank" rel="noopener">@belnavo.tech</a> - WhatsApp: <a class="muted" href="https://wa.me/2347037718954" target="_blank">+2347037718954</a></div></footer>
+</div>
+
+<div class="modal" id="userModal" aria-hidden="true">
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="userModalTitle">
+    <div class="toolbar" style="justify-content:space-between;align-items:center">
+      <h3 id="userModalTitle" style="margin:0">User Details</h3>
+      <button id="closeUserModal" class="ghost" type="button">Close</button>
+    </div>
+    <div id="userModalBody" class="meta-grid" style="margin-top:12px"></div>
+  </div>
+</div>
+
+<script>
+const q=(s,e=document)=>e.querySelector(s), qa=(s,e=document)=>Array.from(e.querySelectorAll(s));
+const esc=v=>String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const ngn=v=>`N${Number(v||0).toLocaleString('en-NG')}`;
+const st={user:null};
+const templateLibrary=[
+  {slug:'starter-site',title:'Minimal Launch Site',desc:'A clean 3-page template for startups and personal brands.',img:'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=80'},
+  {slug:'starter-site',title:'Agency Showcase',desc:'Service-led layout with case-study sections and CTA blocks.',img:'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80'},
+  {slug:'starter-site',title:'Creative Portfolio',desc:'A polished template for designers and motion artists.',img:'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80'},
+  {slug:'starter-site',title:'Business Landing Page',desc:'A conversion-focused layout for local businesses.',img:'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80'},
+  {slug:'brand-motion',title:'Brand Kit System',desc:'Logo direction, colors, typography and brand usage.',img:'https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1200&q=80'},
+  {slug:'brand-motion',title:'Motion Intro Pack',desc:'Short animated intros for reels, ads and product promos.',img:'https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&w=1200&q=80'},
+  {slug:'brand-motion',title:'Social Launch Kit',desc:'Ready-to-post visuals for announcement campaigns.',img:'https://images.unsplash.com/photo-1545239351-1141bd82e8a6?auto=format&fit=crop&w=1200&q=80'},
+  {slug:'brand-motion',title:'Identity Refresh Pack',desc:'A complete visual refresh for an existing brand.',img:'https://images.unsplash.com/photo-1511453679205-3c4b4d9c2b2a?auto=format&fit=crop&w=1200&q=80'},
+  {slug:'ecommerce-store',title:'Fashion Store Template',desc:'A stylish store layout for products and collections.',img:'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1200&q=80'},
+  {slug:'ecommerce-store',title:'Electronics Store Template',desc:'Feature-heavy storefront for gadgets and devices.',img:'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=1200&q=80'},
+  {slug:'ecommerce-store',title:'Beauty Shop Template',desc:'Soft, premium layout for beauty and skincare brands.',img:'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=1200&q=80'},
+  {slug:'ecommerce-store',title:'Digital Products Store',desc:'Selling downloads, packages and subscriptions.',img:'https://images.unsplash.com/photo-1556742400-b5d1a0b7a8a3?auto=format&fit=crop&w=1200&q=80'}
+];
+const set=(id,m,ok=true)=>{const e=q(id);e.textContent=m;e.className=`status ${m?(ok?'ok':'error'):''}`};
+
+function renderTemplates(filter='all'){
+  const items=templateLibrary.filter(x=>filter==='all'||x.slug===filter);
+  q('#templateGrid').innerHTML=items.map(x=>`<div class='card'><img class='service-media' src='${x.img}' alt='${esc(x.title)}'><div class='muted' style='margin-top:8px'>${x.slug.replace('-',' ').toUpperCase()}</div><h3 style='margin:6px 0 4px'>${esc(x.title)}</h3><p class='muted' style='margin-top:0'>${esc(x.desc)}</p></div>`).join('');
+}
+
+document.documentElement.setAttribute('data-theme',localStorage.getItem('sx_theme')||'dark');
+q('#themeToggle').onclick=()=>{const r=document.documentElement,n=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',n);localStorage.setItem('sx_theme',n)};
+q('#loginTab').onclick=()=>{q('#loginForm').classList.remove('hidden');q('#registerForm').classList.add('hidden');q('#forgotForm').classList.add('hidden');q('#verifyForm').classList.add('hidden')};
+q('#registerTab').onclick=()=>{q('#registerForm').classList.remove('hidden');q('#loginForm').classList.add('hidden');q('#forgotForm').classList.add('hidden');q('#verifyForm').classList.add('hidden')};
+q('#forgotTab').onclick=()=>{q('#forgotForm').classList.remove('hidden');q('#loginForm').classList.add('hidden');q('#registerForm').classList.add('hidden');q('#verifyForm').classList.add('hidden')};
+qa('[data-template-filter]').forEach(btn=>btn.onclick=()=>{qa('[data-template-filter]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderTemplates(btn.dataset.templateFilter);});
+
+q('#registerForm').onsubmit=async e=>{e.preventDefault();try{const payload={fullName:q('#regFullName').value.trim(),username:q('#regUsername').value.trim(),email:q('#regEmail').value.trim(),phone:q('#regPhone').value.trim(),password:q('#regPassword').value};const r=await fetch('/api/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const d=await r.json();if(!r.ok)throw new Error(d.error);q('#verificationId').value=d.verificationId||'';q('#verifyForm').classList.remove('hidden');set('#authMsg',d.message||'Enter the code sent to your email.',true);}catch(err){set('#authMsg',err.message,false)}};
+q('#verifyForm').onsubmit=async e=>{e.preventDefault();try{const r=await fetch('/api/auth/register/verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({verificationId:q('#verificationId').value.trim(),code:q('#verifyCode').value.trim()})});const d=await r.json();if(!r.ok)throw new Error(d.error);st.user=d.user;q('#verifyForm').classList.add('hidden');await boot();}catch(err){set('#authMsg',err.message,false)}};
+q('#resendCode').onclick=async()=>{try{const r=await fetch('/api/auth/register/resend',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({verificationId:q('#verificationId').value.trim()})});const d=await r.json();if(!r.ok)throw new Error(d.error);set('#authMsg',d.message||'A new code was sent.',true);}catch(err){set('#authMsg',err.message,false)}};
+q('#loginForm').onsubmit=async e=>{e.preventDefault();try{const r=await fetch('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({identifier:q('#loginIdentifier').value.trim(),password:q('#loginPassword').value})});const d=await r.json();if(!r.ok)throw new Error(d.error);st.user=d.user;await boot();}catch(err){set('#authMsg',err.message,false)}};
+q('#forgotForm').onsubmit=async e=>{e.preventDefault();try{const r=await fetch('/api/auth/forgot-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({identifier:q('#forgotIdentifier').value.trim()})});const d=await r.json();if(!r.ok)throw new Error(d.error);q('#resetToken').value=d.resetToken||'';set('#authMsg','Reset token created.',true);}catch(err){set('#authMsg',err.message,false)}};
+q('#resetBtn').onclick=async()=>{try{const r=await fetch('/api/auth/reset-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:q('#resetToken').value.trim(),newPassword:q('#resetPassword').value})});const d=await r.json();if(!r.ok)throw new Error(d.error);set('#authMsg','Password reset successful.',true);}catch(err){set('#authMsg',err.message,false)}};
+q('#logoutBtn').onclick=async()=>{await fetch('/api/auth/logout',{method:'POST'});location.reload()};
+
+q('#saveProfile').onclick=async()=>{try{const r=await fetch('/api/profile',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({fullName:q('#pfName').value.trim(),phone:q('#pfPhone').value.trim()})});const d=await r.json();if(!r.ok)throw new Error(d.error);set('#profileMsg','Profile updated.',true);}catch(err){set('#profileMsg',err.message,false)}};
+q('#changePw').onclick=async()=>{try{const r=await fetch('/api/profile/change-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({currentPassword:q('#currentPw').value,newPassword:q('#newPw').value})});const d=await r.json();if(!r.ok)throw new Error(d.error);set('#profileMsg','Password changed.',true);q('#mustChange').classList.add('hidden');st.user.mustChangePassword=false;await refreshProfile();}catch(err){set('#profileMsg',err.message,false)}};
+q('#closeUserModal').onclick=()=>q('#userModal').classList.remove('open');
+q('#userModal').addEventListener('click',e=>{if(e.target===q('#userModal')) q('#userModal').classList.remove('open');});
+
+async function refreshProfile(){const r=await fetch('/api/auth/me');if(!r.ok)return;const d=await r.json();st.user=d.user;q('#pfName').value=st.user.fullName||'';q('#pfPhone').value=st.user.phone||'';q('#mustChange').classList.toggle('hidden',!st.user.mustChangePassword);q('#adminNav').classList.toggle('hidden',st.user.role!=='admin');}
+
+async function boot(){
+  q('#authSection').classList.add('hidden');
+  q('#appSection').classList.remove('hidden');
+  q('#logoutBtn').classList.remove('hidden');
+  q('#welcomeText').textContent=`Welcome ${st.user.fullName}. Role: ${st.user.role}`;
+  await refreshProfile();
+  if(st.user.role==='admin') q('#adminMsg').textContent='Admin dashboard loaded.';
+
+  const [cfgR,svcR]=await Promise.all([fetch('/api/config'),fetch('/api/services')]);
+  const cfg=await cfgR.json(),sv=await svcR.json();
+  q('#emailStatus').textContent=cfg.mail?.smtpEnabled ? `Email: SMTP connected (${cfg.mail.fromEmail})` : `Email: fallback logging only (set SMTP_PASS in .env)`;
+  const media={'starter-site':'https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?auto=format&fit=crop&w=900&q=60','ecommerce-store':'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=900&q=60','brand-motion':'https://images.unsplash.com/photo-1572044162444-ad60f128bdea?auto=format&fit=crop&w=900&q=60'};
+  q('#servicesGrid').innerHTML=sv.map(x=>`<div class='card'><img class='service-media' src='${media[x.slug]||media['starter-site']}'><h3>${esc(x.name)}</h3><p class='muted'>${esc(x.description)}</p><strong>${ngn(x.priceNgn)}</strong><div class='muted'>${x.durationDays} days</div></div>`).join('');
+  renderTemplates('all');
+  const opts=['<option value="">Select service</option>'].concat(sv.map(x=>`<option value='${x.id}'>${esc(x.name)} - ${ngn(x.priceNgn)}</option>`));
+  q('#quickService').innerHTML=opts.join('');
+  q('#checkoutService').innerHTML=opts.join('');
+  q('#bankInfo').textContent=`Bank: ${cfg.bank.name} | Account No: ${cfg.bank.accountNumber} | Name: ${cfg.bank.accountName}`;
+  await Promise.all([loadOrders(),loadNotes()]);
+  if(st.user.role==='admin'){
+    q('#admin').classList.remove('hidden');
+    await Promise.all([loadAdmin(),loadUsers(),loadAnalytics(),loadAudit()]);
+  }
+}
+
+async function createOrder(payload,id){const r=await fetch('/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const d=await r.json();if(!r.ok)throw new Error(d.error);q('#orderIdInput').value=d.orderId;set(id,`Booking ${d.bookingCode} created. Amount: ${ngn(d.amountNgn)}`,true);await loadOrders();if(st.user.role==='admin')await loadAdmin();}
+q('#quickForm').onsubmit=async e=>{e.preventDefault();try{await createOrder(Object.fromEntries(new FormData(e.target).entries()),'#quickMsg');e.target.reset();}catch(err){set('#quickMsg',err.message,false)}};
+q('#checkoutForm').onsubmit=async e=>{e.preventDefault();try{await createOrder(Object.fromEntries(new FormData(e.target).entries()),'#checkoutMsg');}catch(err){set('#checkoutMsg',err.message,false)}};
+q('#transferForm').onsubmit=async e=>{e.preventDefault();try{const r=await fetch('/api/payments/bank-transfer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.fromEntries(new FormData(e.target).entries()))});const d=await r.json();if(!r.ok)throw new Error(d.error);set('#payMsg',`Payment submitted. Ref: ${d.reference}`,true);await loadOrders();if(st.user.role==='admin')await loadAdmin();await loadNotes();}catch(err){set('#payMsg',err.message,false)}};
+
+async function loadOrders(){const r=await fetch('/api/orders');const d=await r.json();if(!r.ok)return set('#trackMsg',d.error||'Unable to load',false);q('#trackMeta').textContent=d.length?`Last updated: ${new Date().toLocaleTimeString()}`:'';q('#ordersList').innerHTML=d.length?d.map(o=>`<div class='card'><strong>${esc(o.serviceName)}</strong><div class='muted'>${esc(o.bookingCode)}</div><div class='muted'>${ngn(o.amountNgn)} - ${esc(o.status)} - ${esc(o.paymentStatus)}</div>${o.receiptUrl?`<a class='muted' href='${esc(o.receiptUrl)}' target='_blank'>Receipt</a>`:''}</div>`).join(''):'<div class="muted">No orders yet.</div>';set('#trackMsg','Orders loaded',true)}
+async function loadNotes(){const r=await fetch('/api/notifications');const d=await r.json();if(!r.ok)return;q('#notes').innerHTML=d.length?d.map(n=>`<div class='card'><strong>${esc(n.type)}</strong><div class='muted'>${esc(n.message)}</div><div class='muted'>${new Date(n.createdAt).toLocaleString()}</div></div>`).join(''):'<div class="muted">No notifications yet.</div>'}
+async function loadAdmin(){const p=new URLSearchParams();if(q('#fq').value.trim())p.set('q',q('#fq').value.trim());if(q('#fstatus').value)p.set('status',q('#fstatus').value);if(q('#ffrom').value)p.set('from',q('#ffrom').value);if(q('#fto').value)p.set('to',q('#fto').value);const [s,o]=await Promise.all([fetch('/api/admin/stats'),fetch('/api/admin/orders?'+p.toString())]);const stt=await s.json(),ord=await o.json();if(!s.ok||!o.ok)return set('#adminMsg',stt.error||'Unable to load admin data',false);q('#statsGrid').innerHTML=`<div class='card'><strong>${stt.userCount}</strong><div class='muted'>Users</div></div><div class='card'><strong>${stt.verifiedUserCount}</strong><div class='muted'>Verified Users</div></div><div class='card'><strong>${stt.newUserCount}</strong><div class='muted'>New This Month</div></div><div class='card'><strong>${stt.totalOrders}</strong><div class='muted'>Orders</div></div><div class='card'><strong>${ngn(stt.revenueNgn)}</strong><div class='muted'>Revenue</div></div><div class='card'><strong>${stt.awaitingVerification}</strong><div class='muted'>Awaiting Payment Check</div></div>`;q('#adminOrders').innerHTML=ord.map(x=>`<div class='card'><div><strong>${esc(x.bookingCode)}</strong> - ${esc(x.customerName)} (${esc(x.username||'n/a')})</div><div class='muted'>${ngn(x.amountNgn)} - ${esc(x.status)} - ${esc(x.paymentStatus)}</div><div class='toolbar'><button class='btn' onclick="confirmP('${x.id}')">Confirm</button><button class='ghost' onclick="cancelO('${x.id}')">Cancel</button><button class='ghost' onclick="openOrder('${x.id}')">Open</button><select onchange="setStatusOrder('${x.id}',this.value)"><option value=''>Set status</option><option>in_progress</option><option>confirmed</option><option>delivered</option><option>closed</option><option>cancelled</option></select></div></div>`).join('');set('#adminMsg','Dashboard loaded',true)}
+async function loadUsers(){const qv=q('#userSearch').value.trim();const r=await fetch('/api/admin/users'+(qv?`?q=${encodeURIComponent(qv)}`:''));const d=await r.json();if(!r.ok)return set('#adminMsg',d.error||'Unable to load users',false);q('#usersCount').textContent=`Total users: ${d.length}`;q('#usersList').innerHTML=d.length?d.map(u=>`<div class='card' role='button' tabindex='0' onclick='openUser("${u.id}")' onkeydown='if(event.key==="Enter") openUser("${u.id}")'><div><strong>${esc(u.fullName)}</strong> <span class='muted'>@${esc(u.username)}</span></div><div class='muted'>${esc(u.email)}${u.phone?` · ${esc(u.phone)}`:''}</div><div class='muted'>Role: ${esc(u.role)} · Email verified: ${u.emailVerified ? 'Yes' : 'No'} · Orders: ${u.totalOrders} · Paid: ${u.paidOrders}</div><div class='muted'>Joined: ${new Date(u.createdAt).toLocaleString()}</div></div>`).join(''):'<div class="muted">No users found.</div>'}
+window.openUser=async id=>{const r=await fetch('/api/admin/users');const d=await r.json();const u=d.find(x=>x.id===id);if(!u)return;q('#userModalTitle').textContent=u.fullName; q('#userModalBody').innerHTML=`<div class='card'><strong>Email</strong><div class='muted'>${esc(u.email)}</div></div><div class='card'><strong>Username</strong><div class='muted'>@${esc(u.username)}</div></div><div class='card'><strong>Phone</strong><div class='muted'>${esc(u.phone||'n/a')}</div></div><div class='card'><strong>Role</strong><div class='muted'>${esc(u.role)}</div></div><div class='card'><strong>Email Verified</strong><div class='muted'>${u.emailVerified ? 'Yes' : 'No'}</div></div><div class='card'><strong>Total Orders</strong><div class='muted'>${u.totalOrders}</div></div><div class='card'><strong>Paid Orders</strong><div class='muted'>${u.paidOrders}</div></div><div class='card'><strong>Joined</strong><div class='muted'>${new Date(u.createdAt).toLocaleString()}</div></div>`;q('#userModal').classList.add('open');};
+window.openOrder=async id=>{const r=await fetch('/api/orders');const d=await r.json();const o=d.find(x=>x.id===id);if(!o)return;alert(`${o.bookingCode}\\n${o.serviceName}\\nStatus: ${o.status}\\nPayment: ${o.paymentStatus}`);};
+async function loadAnalytics(){const r=await fetch('/api/admin/analytics');const d=await r.json();if(!r.ok)return;q('#analytics').innerHTML=d.monthly.map(m=>`<div class='card'><strong>${esc(m.month)}</strong><div class='muted'>Orders: ${m.totalOrders}</div><div class='muted'>Paid: ${ngn(m.paidRevenue)}</div></div>`).join('')}
+async function loadAudit(){const r=await fetch('/api/admin/audit-logs');const d=await r.json();if(!r.ok)return;q('#auditLogs').innerHTML=d.slice(0,30).map(a=>`<div class='card'><strong>${esc(a.action)}</strong><div class='muted'>By: ${esc(a.username||'system')}</div><div class='muted'>${new Date(a.createdAt).toLocaleString()}</div></div>`).join('')}
+
+q('#applyFilter').onclick=()=>loadAdmin();
+q('#backupNow').onclick=async()=>{const r=await fetch('/api/admin/backup-now',{method:'POST'});const d=await r.json();if(!r.ok)return set('#adminMsg',d.error||'Backup failed',false);set('#adminMsg',`Backup created: ${d.backupPath}`,true)};
+q('#refreshTrack').onclick=()=>loadOrders();
+q('#userSearchBtn').onclick=()=>loadUsers();
+q('#refreshUsers').onclick=()=>loadUsers();
+window.confirmP=async id=>{await fetch(`/api/admin/orders/${id}/confirm-payment`,{method:'POST'});await loadAdmin();await loadOrders();await loadNotes();};
+window.cancelO=async id=>{await fetch(`/api/admin/orders/${id}/cancel`,{method:'POST'});await loadAdmin();await loadOrders();await loadNotes();};
+window.setStatusOrder=async(id,status)=>{if(!status)return;await fetch(`/api/admin/orders/${id}/status`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({status})});await loadAdmin();await loadOrders();await loadNotes();};
+
+(async()=>{try{const r=await fetch('/api/auth/me');if(!r.ok)return;const d=await r.json();st.user=d.user;await boot();}catch{}})();
+setInterval(()=>{if(st.user){loadOrders();loadNotes();if(st.user.role==='admin'){loadAdmin();loadUsers();loadAnalytics();loadAudit();}}},30000);
+window.addEventListener('focus',()=>{if(st.user){loadOrders();loadNotes();if(st.user.role==='admin'){loadAdmin();loadUsers();loadAnalytics();loadAudit();}}});
+</script>
+</body>
+</html>

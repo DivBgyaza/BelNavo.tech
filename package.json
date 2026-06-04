@@ -1,0 +1,13 @@
+{
+  "name": "cgpa-calculator-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CGPA calculator with a simple local Node.js backend",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "nodemailer": "^8.0.10"
+  }
+}
