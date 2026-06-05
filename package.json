@@ -1,8 +1,8 @@
 {
-  "name": "cgpa-calculator-backend",
+  "name": "belnavo-tech",
   "version": "1.0.0",
   "private": true,
-  "description": "CGPA calculator with a simple local Node.js backend",
+  "description": "BelNavo tech service booking platform with authentication, payments, and admin tools",
   "scripts": {
     "start": "node server.js"
   },
