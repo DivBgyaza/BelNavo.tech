@@ -39,6 +39,14 @@
     .portfolio-item img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55}
     .overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(2,6,23,.1),rgba(2,6,23,.85))}
     .content{position:relative;z-index:2}
+    .section-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+    .step{display:flex;gap:12px;align-items:flex-start}
+    .step .num{width:36px;height:36px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--accent),var(--accent-2));font-weight:800;color:#fff;flex:0 0 36px}
+    .testimonial{display:grid;gap:8px}
+    .quote{font-size:16px;line-height:1.6}
+    .faq{display:grid;gap:8px}
+    .faq details{background:linear-gradient(180deg, rgba(255,255,255,.03), transparent);border-radius:12px;padding:12px}
+    .faq summary{cursor:pointer;font-weight:700}
     .admin-list,.order-list{display:grid;gap:8px}
     .toolbar{display:flex;gap:8px;flex-wrap:wrap}
     .modal{position:fixed;inset:0;background:rgba(2,6,23,.72);display:none;align-items:center;justify-content:center;z-index:80;padding:20px}
@@ -73,6 +81,15 @@
 
     <section id="services" style="margin-bottom:16px"><h2>Services</h2><div id="servicesGrid" class="pricing"></div></section>
 
+    <section id="process" style="margin-bottom:16px">
+      <h2>How It Works</h2>
+      <div class="section-grid" style="margin-top:12px">
+        <div class="card step"><div class="num">1</div><div><h3 style="margin:0 0 6px">Choose a service</h3><p class="muted">Pick the package that fits your goal, then create your booking in seconds.</p></div></div>
+        <div class="card step"><div class="num">2</div><div><h3 style="margin:0 0 6px">Pay your way</h3><p class="muted">Use bank transfer or pay instantly with your ATM card.</p></div></div>
+        <div class="card step"><div class="num">3</div><div><h3 style="margin:0 0 6px">Track progress</h3><p class="muted">We confirm the payment, update your order, and keep you notified.</p></div></div>
+      </div>
+    </section>
+
     <section id="templates" style="margin-bottom:16px">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
         <h2 style="margin:0">Service Templates</h2>
@@ -86,6 +103,15 @@
       <div id="templateGrid" class="pricing" style="margin-top:12px"></div>
     </section>
 
+    <section id="trust" style="margin-bottom:16px">
+      <h2>Why BelNavo tech</h2>
+      <div class="section-grid" style="margin-top:12px">
+        <div class="card"><h3 style="margin-top:0">Professional delivery</h3><p class="muted">We keep the process clean, responsive, and easy for clients to understand.</p></div>
+        <div class="card"><h3 style="margin-top:0">Secure payment flow</h3><p class="muted">Card checkout uses Flutterwave, while bank transfer still works for offline payments.</p></div>
+        <div class="card"><h3 style="margin-top:0">Real-time tracking</h3><p class="muted">Users can track bookings, notifications, and status changes from one account.</p></div>
+      </div>
+    </section>
+
     <section id="work" style="margin-bottom:16px">
       <h2>Portfolio</h2>
       <div class="portfolio">
@@ -96,11 +122,30 @@
       </div>
     </section>
 
+    <section id="testimonials" style="margin-bottom:16px">
+      <h2>Client Testimonials</h2>
+      <div class="section-grid" style="margin-top:12px">
+        <div class="card testimonial"><div class="quote">“Fast, thoughtful, and easy to work with. The booking flow feels very professional.”</div><div class="muted">- Product client</div></div>
+        <div class="card testimonial"><div class="quote">“The design quality is clean and the admin side makes the business easier to manage.”</div><div class="muted">- Startup founder</div></div>
+        <div class="card testimonial"><div class="quote">“We liked the payment options and how simple the whole process looks.”</div><div class="muted">- Returning customer</div></div>
+      </div>
+    </section>
+
     <section id="book" style="margin-bottom:16px">
       <h2>Book & Bank Transfer</h2>
       <div class="card" style="display:grid;grid-template-columns:1fr 320px;gap:12px">
         <form id="checkoutForm"><div class="row"><input name="customerName" placeholder="Full name" required /><input name="email" type="email" placeholder="Email" required /></div><div class="row"><input name="phone" placeholder="Phone" /><input name="preferredDate" type="date" /></div><select id="checkoutService" name="serviceId" required></select><textarea name="brief" rows="5" placeholder="Tell us about your project"></textarea><button class="btn">Create Order</button><div id="checkoutMsg" class="status"></div></form>
-        <aside><h4 style="margin:0 0 6px">Payment details</h4><p id="bankInfo" class="muted"></p><form id="transferForm"><input id="orderIdInput" name="orderId" placeholder="Order ID" required /><input name="payerName" placeholder="Payer account name" required /><input name="senderAccount" placeholder="Sender account number" /><input name="receiptUrl" placeholder="Receipt URL (optional)" /><textarea name="proofNote" rows="3" placeholder="Transfer note"></textarea><button class="btn">I Have Paid</button><div id="payMsg" class="status"></div></form></aside>
+        <aside><h4 style="margin:0 0 6px">Payment details</h4><p id="bankInfo" class="muted"></p><form id="transferForm"><input id="orderIdInput" name="orderId" placeholder="Order ID" required /><input name="payerName" placeholder="Payer account name" required /><input name="senderAccount" placeholder="Sender account number" /><input name="receiptUrl" placeholder="Receipt URL (optional)" /><textarea name="proofNote" rows="3" placeholder="Transfer note"></textarea><button class="btn">I Have Paid</button><div id="payMsg" class="status"></div></form><div style="height:10px"></div><button id="cardPayBtn" class="ghost" type="button" style="width:100%">Pay with ATM Card</button><div id="cardPayMsg" class="status" style="margin-top:8px"></div></aside>
+      </div>
+    </section>
+
+    <section id="faq" style="margin-bottom:16px">
+      <h2>FAQ</h2>
+      <div class="faq" style="margin-top:12px">
+        <details class="card"><summary>Can I pay with my ATM card?</summary><p class="muted">Yes. We now support card checkout through Flutterwave, alongside bank transfer.</p></details>
+        <details class="card"><summary>Will I still see bank transfer details?</summary><p class="muted">Yes. We keep bank transfer available for users who prefer manual payment.</p></details>
+        <details class="card"><summary>How do I know my order is confirmed?</summary><p class="muted">Your dashboard and booking tracker update after payment verification or admin confirmation.</p></details>
+        <details class="card"><summary>Can the website be hosted online?</summary><p class="muted">Yes. The app is now prepared for Render deployment with persistent storage support.</p></details>
       </div>
     </section>
 
@@ -208,7 +253,7 @@ async function boot(){
 
   const [cfgR,svcR]=await Promise.all([fetch('/api/config'),fetch('/api/services')]);
   const cfg=await cfgR.json(),sv=await svcR.json();
-  q('#emailStatus').textContent=cfg.mail?.smtpEnabled ? `Email: SMTP connected (${cfg.mail.fromEmail})` : `Email: fallback logging only (set SMTP_PASS in .env)`;
+  q('#emailStatus').textContent=`Email: ${cfg.mail?.smtpEnabled ? `SMTP connected (${cfg.mail.fromEmail})` : 'fallback logging only (set SMTP_PASS in .env)'} · Card payments: ${cfg.payments?.cardEnabled ? 'enabled' : 'not configured yet'}`;
   const media={'starter-site':'https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?auto=format&fit=crop&w=900&q=60','ecommerce-store':'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=900&q=60','brand-motion':'https://images.unsplash.com/photo-1572044162444-ad60f128bdea?auto=format&fit=crop&w=900&q=60'};
   q('#servicesGrid').innerHTML=sv.map(x=>`<div class='card'><img class='service-media' src='${media[x.slug]||media['starter-site']}'><h3>${esc(x.name)}</h3><p class='muted'>${esc(x.description)}</p><strong>${ngn(x.priceNgn)}</strong><div class='muted'>${x.durationDays} days</div></div>`).join('');
   renderTemplates('all');
@@ -216,6 +261,8 @@ async function boot(){
   q('#quickService').innerHTML=opts.join('');
   q('#checkoutService').innerHTML=opts.join('');
   q('#bankInfo').textContent=`Bank: ${cfg.bank.name} | Account No: ${cfg.bank.accountNumber} | Name: ${cfg.bank.accountName}`;
+  q('#cardPayBtn').disabled=!cfg.payments?.cardEnabled;
+  q('#cardPayBtn').textContent=cfg.payments?.cardEnabled ? 'Pay with ATM Card' : 'Card payments not configured yet';
   await Promise.all([loadOrders(),loadNotes()]);
   if(st.user.role==='admin'){
     q('#admin').classList.remove('hidden');
@@ -227,10 +274,11 @@ async function createOrder(payload,id){const r=await fetch('/api/orders',{method
 q('#quickForm').onsubmit=async e=>{e.preventDefault();try{await createOrder(Object.fromEntries(new FormData(e.target).entries()),'#quickMsg');e.target.reset();}catch(err){set('#quickMsg',err.message,false)}};
 q('#checkoutForm').onsubmit=async e=>{e.preventDefault();try{await createOrder(Object.fromEntries(new FormData(e.target).entries()),'#checkoutMsg');}catch(err){set('#checkoutMsg',err.message,false)}};
 q('#transferForm').onsubmit=async e=>{e.preventDefault();try{const r=await fetch('/api/payments/bank-transfer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.fromEntries(new FormData(e.target).entries()))});const d=await r.json();if(!r.ok)throw new Error(d.error);set('#payMsg',`Payment submitted. Ref: ${d.reference}`,true);await loadOrders();if(st.user.role==='admin')await loadAdmin();await loadNotes();}catch(err){set('#payMsg',err.message,false)}};
+q('#cardPayBtn').onclick=async()=>{try{const orderId=q('#orderIdInput').value.trim();if(!orderId) throw new Error('Create an order first, then enter the Order ID.');const r=await fetch('/api/payments/card/initialize',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({orderId})});const d=await r.json();if(!r.ok)throw new Error(d.error);set('#cardPayMsg','Redirecting to secure card checkout...',true);const f=document.createElement('form');f.method='POST';f.action=d.paymentUrl;f.style.display='none';const fields={public_key:d.publicKey,tx_ref:d.txRef,amount:d.amount,currency:d.currency,redirect_url:d.redirectUrl,payment_options:'card','customer[name]':d.customer.name,'customer[email]':d.customer.email,'customer[phone_number]':d.customer.phone_number,'meta[orderId]':d.meta.orderId,'meta[bookingCode]':d.meta.bookingCode,'customizations[title]':d.customizations.title,'customizations[description]':d.customizations.description,'customizations[logo]':d.customizations.logo};Object.entries(fields).forEach(([k,v])=>{const i=document.createElement('input');i.type='hidden';i.name=k;i.value=v||'';f.appendChild(i)});document.body.appendChild(f);f.submit();}catch(err){set('#cardPayMsg',err.message,false)}};
 
 async function loadOrders(){const r=await fetch('/api/orders');const d=await r.json();if(!r.ok)return set('#trackMsg',d.error||'Unable to load',false);q('#trackMeta').textContent=d.length?`Last updated: ${new Date().toLocaleTimeString()}`:'';q('#ordersList').innerHTML=d.length?d.map(o=>`<div class='card'><strong>${esc(o.serviceName)}</strong><div class='muted'>${esc(o.bookingCode)}</div><div class='muted'>${ngn(o.amountNgn)} - ${esc(o.status)} - ${esc(o.paymentStatus)}</div>${o.receiptUrl?`<a class='muted' href='${esc(o.receiptUrl)}' target='_blank'>Receipt</a>`:''}</div>`).join(''):'<div class="muted">No orders yet.</div>';set('#trackMsg','Orders loaded',true)}
 async function loadNotes(){const r=await fetch('/api/notifications');const d=await r.json();if(!r.ok)return;q('#notes').innerHTML=d.length?d.map(n=>`<div class='card'><strong>${esc(n.type)}</strong><div class='muted'>${esc(n.message)}</div><div class='muted'>${new Date(n.createdAt).toLocaleString()}</div></div>`).join(''):'<div class="muted">No notifications yet.</div>'}
-async function loadAdmin(){const p=new URLSearchParams();if(q('#fq').value.trim())p.set('q',q('#fq').value.trim());if(q('#fstatus').value)p.set('status',q('#fstatus').value);if(q('#ffrom').value)p.set('from',q('#ffrom').value);if(q('#fto').value)p.set('to',q('#fto').value);const [s,o]=await Promise.all([fetch('/api/admin/stats'),fetch('/api/admin/orders?'+p.toString())]);const stt=await s.json(),ord=await o.json();if(!s.ok||!o.ok)return set('#adminMsg',stt.error||'Unable to load admin data',false);q('#statsGrid').innerHTML=`<div class='card'><strong>${stt.userCount}</strong><div class='muted'>Users</div></div><div class='card'><strong>${stt.verifiedUserCount}</strong><div class='muted'>Verified Users</div></div><div class='card'><strong>${stt.newUserCount}</strong><div class='muted'>New This Month</div></div><div class='card'><strong>${stt.totalOrders}</strong><div class='muted'>Orders</div></div><div class='card'><strong>${ngn(stt.revenueNgn)}</strong><div class='muted'>Revenue</div></div><div class='card'><strong>${stt.awaitingVerification}</strong><div class='muted'>Awaiting Payment Check</div></div>`;q('#adminOrders').innerHTML=ord.map(x=>`<div class='card'><div><strong>${esc(x.bookingCode)}</strong> - ${esc(x.customerName)} (${esc(x.username||'n/a')})</div><div class='muted'>${ngn(x.amountNgn)} - ${esc(x.status)} - ${esc(x.paymentStatus)}</div><div class='toolbar'><button class='btn' onclick="confirmP('${x.id}')">Confirm</button><button class='ghost' onclick="cancelO('${x.id}')">Cancel</button><button class='ghost' onclick="openOrder('${x.id}')">Open</button><select onchange="setStatusOrder('${x.id}',this.value)"><option value=''>Set status</option><option>in_progress</option><option>confirmed</option><option>delivered</option><option>closed</option><option>cancelled</option></select></div></div>`).join('');set('#adminMsg','Dashboard loaded',true)}
+async function loadAdmin(){const p=new URLSearchParams();if(q('#fq').value.trim())p.set('q',q('#fq').value.trim());if(q('#fstatus').value)p.set('status',q('#fstatus').value);if(q('#ffrom').value)p.set('from',q('#ffrom').value);if(q('#fto').value)p.set('to',q('#fto').value);const [s,o]=await Promise.all([fetch('/api/admin/stats'),fetch('/api/admin/orders?'+p.toString())]);const stt=await s.json(),ord=await o.json();if(!s.ok||!o.ok)return set('#adminMsg',stt.error||'Unable to load admin data',false);q('#statsGrid').innerHTML=`<div class='card'><strong>${stt.userCount}</strong><div class='muted'>Users</div></div><div class='card'><strong>${stt.verifiedUserCount}</strong><div class='muted'>Verified Users</div></div><div class='card'><strong>${stt.newUserCount}</strong><div class='muted'>New This Month</div></div><div class='card'><strong>${stt.totalOrders}</strong><div class='muted'>Orders</div></div><div class='card'><strong>${ngn(stt.revenueNgn)}</strong><div class='muted'>Revenue</div></div><div class='card'><strong>${stt.awaitingVerification}</strong><div class='muted'>Bank Transfers Pending</div></div><div class='card'><strong>${stt.pendingCardPayments||0}</strong><div class='muted'>Card Payments Pending</div></div>`;q('#adminOrders').innerHTML=ord.map(x=>`<div class='card'><div><strong>${esc(x.bookingCode)}</strong> - ${esc(x.customerName)} (${esc(x.username||'n/a')})</div><div class='muted'>${ngn(x.amountNgn)} - ${esc(x.status)} - ${esc(x.paymentStatus)}</div><div class='toolbar'><button class='btn' onclick="confirmP('${x.id}')">Confirm</button><button class='ghost' onclick="cancelO('${x.id}')">Cancel</button><button class='ghost' onclick="openOrder('${x.id}')">Open</button><select onchange="setStatusOrder('${x.id}',this.value)"><option value=''>Set status</option><option>new</option><option>pending_card</option><option>pending_verification</option><option>payment_failed</option><option>in_progress</option><option>confirmed</option><option>delivered</option><option>closed</option><option>cancelled</option></select></div></div>`).join('');set('#adminMsg','Dashboard loaded',true)}
 async function loadUsers(){const qv=q('#userSearch').value.trim();const r=await fetch('/api/admin/users'+(qv?`?q=${encodeURIComponent(qv)}`:''));const d=await r.json();if(!r.ok)return set('#adminMsg',d.error||'Unable to load users',false);q('#usersCount').textContent=`Total users: ${d.length}`;q('#usersList').innerHTML=d.length?d.map(u=>`<div class='card' role='button' tabindex='0' onclick='openUser("${u.id}")' onkeydown='if(event.key==="Enter") openUser("${u.id}")'><div><strong>${esc(u.fullName)}</strong> <span class='muted'>@${esc(u.username)}</span></div><div class='muted'>${esc(u.email)}${u.phone?` · ${esc(u.phone)}`:''}</div><div class='muted'>Role: ${esc(u.role)} · Email verified: ${u.emailVerified ? 'Yes' : 'No'} · Orders: ${u.totalOrders} · Paid: ${u.paidOrders}</div><div class='muted'>Joined: ${new Date(u.createdAt).toLocaleString()}</div></div>`).join(''):'<div class="muted">No users found.</div>'}
 window.openUser=async id=>{const r=await fetch('/api/admin/users');const d=await r.json();const u=d.find(x=>x.id===id);if(!u)return;q('#userModalTitle').textContent=u.fullName; q('#userModalBody').innerHTML=`<div class='card'><strong>Email</strong><div class='muted'>${esc(u.email)}</div></div><div class='card'><strong>Username</strong><div class='muted'>@${esc(u.username)}</div></div><div class='card'><strong>Phone</strong><div class='muted'>${esc(u.phone||'n/a')}</div></div><div class='card'><strong>Role</strong><div class='muted'>${esc(u.role)}</div></div><div class='card'><strong>Email Verified</strong><div class='muted'>${u.emailVerified ? 'Yes' : 'No'}</div></div><div class='card'><strong>Total Orders</strong><div class='muted'>${u.totalOrders}</div></div><div class='card'><strong>Paid Orders</strong><div class='muted'>${u.paidOrders}</div></div><div class='card'><strong>Joined</strong><div class='muted'>${new Date(u.createdAt).toLocaleString()}</div></div>`;q('#userModal').classList.add('open');};
 window.openOrder=async id=>{const r=await fetch('/api/orders');const d=await r.json();const o=d.find(x=>x.id===id);if(!o)return;alert(`${o.bookingCode}\\n${o.serviceName}\\nStatus: ${o.status}\\nPayment: ${o.paymentStatus}`);};

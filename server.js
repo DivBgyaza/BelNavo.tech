@@ -12,10 +12,15 @@ const OWNER_WHATSAPP = '+2347037718954';
 const BANK_NAME = 'KUDA';
 const BANK_ACCOUNT_NUMBER = '2061768688';
 const BANK_ACCOUNT_NAME = 'BelNavo tech';
+const SITE_URL = String(process.env.SITE_URL || '').trim();
+const FLW_PUBLIC_KEY = String(process.env.FLW_PUBLIC_KEY || '').trim();
+const FLW_SECRET_KEY = String(process.env.FLW_SECRET_KEY || '').trim();
+const FLW_SECRET_HASH = String(process.env.FLW_SECRET_HASH || '').trim();
+const CARD_PAYMENT_ENABLED = !!(FLW_PUBLIC_KEY && FLW_SECRET_KEY);
 const SESSION_MS = 1000 * 60 * 60 * 24 * 7;
 const RESET_MS = 1000 * 60 * 30;
 const PUBLIC_DIR = path.join(__dirname, 'public');
-const DATA_DIR = path.join(__dirname, 'data');
+const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
 const DB_PATH = path.join(DATA_DIR, 'belnavo-tech.sqlite');
 const BACKUP_DIR = path.join(DATA_DIR, 'backups');
 const MAIL_LOG = path.join(DATA_DIR, 'mail.log');
@@ -100,7 +105,7 @@ async function handleApi(req, res, url) {
   const session = getSession(req);
 
   if (req.method === 'GET' && url.pathname === '/api/health') return sendJson(res, 200, { status: 'ok' });
-  if (req.method === 'GET' && url.pathname === '/api/config') return sendJson(res, 200, { ownerEmail: OWNER_EMAIL, ownerWhatsapp: OWNER_WHATSAPP, mail: { smtpEnabled: SMTP_READY, fromEmail: SMTP_FROM }, bank: { name: BANK_NAME, accountNumber: BANK_ACCOUNT_NUMBER, accountName: BANK_ACCOUNT_NAME } });
+  if (req.method === 'GET' && url.pathname === '/api/config') return sendJson(res, 200, { ownerEmail: OWNER_EMAIL, ownerWhatsapp: OWNER_WHATSAPP, mail: { smtpEnabled: SMTP_READY, fromEmail: SMTP_FROM }, payments: { cardEnabled: CARD_PAYMENT_ENABLED, gateway: 'Flutterwave', currency: 'NGN' }, bank: { name: BANK_NAME, accountNumber: BANK_ACCOUNT_NUMBER, accountName: BANK_ACCOUNT_NAME } });
 
   if (req.method === 'POST' && url.pathname === '/api/auth/register') {
     const body = await readBody(req); const out = startRegistration(body);
@@ -212,11 +217,97 @@ async function handleApi(req, res, url) {
     sendEmail(OWNER_EMAIL, 'Payment Submitted', `Payment proof submitted for booking ${order.bookingCode}. Ref: ${ref}. Payer: ${payerName}. Sender account: ${String(body?.senderAccount || '').trim() || 'n/a'}.`);
     return sendJson(res, 201, { success: true, reference: ref, bookingCode: order.bookingCode });
   }
+  if (req.method === 'POST' && url.pathname === '/api/payments/card/initialize') {
+    if (!CARD_PAYMENT_ENABLED) return sendJson(res, 503, { error: 'Card payments are not configured yet. Set FLW_PUBLIC_KEY and FLW_SECRET_KEY in .env.' });
+    const body = await readBody(req);
+    const orderId = String(body?.orderId || '').trim();
+    if (!orderId) return sendJson(res, 400, { error: 'orderId is required.' });
+    const order = session.user.role === 'admin'
+      ? db.prepare('SELECT o.id,o.user_id AS userId,o.booking_code AS bookingCode,o.customer_name AS customerName,o.email,o.phone,o.amount_ngn AS amountNgn,o.payment_status AS paymentStatus FROM orders o WHERE o.id=?').get(orderId)
+      : db.prepare('SELECT o.id,o.user_id AS userId,o.booking_code AS bookingCode,o.customer_name AS customerName,o.email,o.phone,o.amount_ngn AS amountNgn,o.payment_status AS paymentStatus FROM orders o WHERE o.id=? AND o.user_id=?').get(orderId, session.user.id);
+    if (!order) return sendJson(res, 404, { error: 'Order not found.' });
+    if (order.paymentStatus === 'paid') return sendJson(res, 400, { error: 'Order already marked as paid.' });
+    const txRef = `FLW-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+    const now = new Date().toISOString();
+    const origin = getRequestOrigin(req, url);
+    const redirectUrl = new URL('/payment-return.html', origin).toString();
+    const paymentRow = db.prepare('SELECT id FROM payments WHERE order_id=? AND provider=? LIMIT 1').get(order.id, 'FLUTTERWAVE_CARD');
+    if (paymentRow) {
+      db.prepare('UPDATE payments SET reference=?,amount_ngn=?,status=?,receipt_url=?,created_at=?,paid_at=NULL WHERE id=?').run(txRef, order.amountNgn, 'initialized', null, now, paymentRow.id);
+    } else {
+      db.prepare('INSERT INTO payments(id,order_id,provider,reference,amount_ngn,status,receipt_url,created_at,paid_at) VALUES(?,?,?,?,?,?,?,?,NULL)').run(crypto.randomUUID(), order.id, 'FLUTTERWAVE_CARD', txRef, order.amountNgn, 'initialized', null, now);
+    }
+    db.prepare("UPDATE orders SET payment_status='pending_card',status='in_progress',updated_at=? WHERE id=?").run(now, order.id);
+    addNotification(order.userId, 'card_payment_started', `Card checkout started for ${order.bookingCode}.`);
+    addAudit(session.user.id, 'card_payment_initialized', 'order', order.id, { txRef });
+    return sendJson(res, 200, {
+      success: true,
+      txRef,
+      paymentUrl: 'https://checkout.flutterwave.com/v3/hosted/pay',
+      publicKey: FLW_PUBLIC_KEY,
+      amount: order.amountNgn,
+      currency: 'NGN',
+      redirectUrl,
+      customer: {
+        name: order.customerName || session.user.fullName,
+        email: order.email || session.user.email,
+        phone_number: order.phone || session.user.phone || '',
+      },
+      meta: { orderId: order.id, bookingCode: order.bookingCode },
+      customizations: {
+        title: 'BelNavo tech',
+        description: `Payment for ${order.bookingCode}`,
+        logo: new URL('/assets/belnavo-logo.png', origin).toString(),
+      },
+    });
+  }
+  if (req.method === 'POST' && url.pathname === '/api/payments/card/verify') {
+    if (!FLW_SECRET_KEY) return sendJson(res, 503, { error: 'Card verification is not configured yet. Set FLW_SECRET_KEY in .env.' });
+    const body = await readBody(req);
+    const transactionId = Number(body?.transactionId || body?.id || 0);
+    const txRef = String(body?.txRef || body?.tx_ref || '').trim();
+    if (!transactionId || !txRef) return sendJson(res, 400, { error: 'transactionId and txRef are required.' });
+    const payment = db.prepare(`
+      SELECT p.id AS paymentId,p.order_id AS orderId,p.reference AS txRef,p.amount_ngn AS expectedAmount,p.status AS paymentStatus,
+      o.booking_code AS bookingCode,o.user_id AS userId,o.email,o.customer_name AS customerName
+      FROM payments p JOIN orders o ON o.id=p.order_id
+      WHERE p.reference=? AND p.provider='FLUTTERWAVE_CARD'
+    `).get(txRef);
+    if (!payment) return sendJson(res, 404, { error: 'Payment record not found.' });
+    const verifyRes = await fetch(`https://api.flutterwave.com/v3/transactions/${transactionId}/verify`, {
+      headers: { Authorization: `Bearer ${FLW_SECRET_KEY}`, Accept: 'application/json' },
+    });
+    const verifyJson = await verifyRes.json().catch(() => null);
+    if (!verifyRes.ok || !verifyJson || verifyJson.status !== 'success' || !verifyJson.data) {
+      db.prepare("UPDATE payments SET status='failed' WHERE id=?").run(payment.paymentId);
+      db.prepare("UPDATE orders SET payment_status='payment_failed',updated_at=? WHERE id=?").run(new Date().toISOString(), payment.orderId);
+      return sendJson(res, 400, { error: 'Unable to verify payment.' });
+    }
+    const tx = verifyJson.data;
+    const txCurrency = String(tx.currency || '').toUpperCase();
+    const expectedCurrency = 'NGN';
+    const amountOk = Number(tx.amount) >= Number(payment.expectedAmount);
+    const statusOk = String(tx.status || '').toLowerCase() === 'successful';
+    const refOk = String(tx.tx_ref || '').trim() === txRef;
+    if (!statusOk || !amountOk || txCurrency !== expectedCurrency || !refOk) {
+      db.prepare("UPDATE payments SET status='failed' WHERE id=?").run(payment.paymentId);
+      db.prepare("UPDATE orders SET payment_status='payment_failed',updated_at=? WHERE id=?").run(new Date().toISOString(), payment.orderId);
+      return sendJson(res, 400, { error: 'Payment did not pass verification checks.' });
+    }
+    const now = new Date().toISOString();
+    db.prepare("UPDATE payments SET status='paid',paid_at=? WHERE id=?").run(now, payment.paymentId);
+    db.prepare("UPDATE orders SET payment_status='paid',status='confirmed',updated_at=? WHERE id=?").run(now, payment.orderId);
+    addNotification(payment.userId, 'payment_confirmed', `Card payment confirmed for ${payment.bookingCode}.`);
+    sendEmail(payment.email, 'Card Payment Confirmed', `Your card payment for booking ${payment.bookingCode} has been confirmed.`);
+    sendEmail(OWNER_EMAIL, 'Card Payment Confirmed', `Card payment confirmed for ${payment.bookingCode} (${payment.customerName}).`);
+    addAudit(session?.user?.id || null, 'card_payment_verified', 'order', payment.orderId, { txRef, transactionId });
+    return sendJson(res, 200, { success: true, bookingCode: payment.bookingCode, amount: payment.expectedAmount });
+  }
 
   if (session.user.role !== 'admin') return sendJson(res, 403, { error: 'Admin access required.' });
 
   if (req.method === 'GET' && url.pathname === '/api/admin/stats') {
-    const stats = db.prepare("SELECT (SELECT COUNT(*) FROM orders) AS totalOrders,(SELECT COUNT(*) FROM orders WHERE status='confirmed') AS confirmedOrders,(SELECT COUNT(*) FROM transfer_proofs WHERE verified=0) AS awaitingVerification,(SELECT COALESCE(SUM(amount_ngn),0) FROM orders WHERE payment_status='paid') AS revenueNgn,(SELECT COUNT(*) FROM users WHERE role='user') AS userCount,(SELECT COUNT(*) FROM users WHERE role='user' AND email_verified=1) AS verifiedUserCount,(SELECT COUNT(*) FROM users WHERE role='user' AND created_at>=date('now','start of month')) AS newUserCount").get();
+    const stats = db.prepare("SELECT (SELECT COUNT(*) FROM orders) AS totalOrders,(SELECT COUNT(*) FROM orders WHERE status='confirmed') AS confirmedOrders,(SELECT COUNT(*) FROM transfer_proofs WHERE verified=0) AS awaitingVerification,(SELECT COUNT(*) FROM orders WHERE payment_status='pending_card') AS pendingCardPayments,(SELECT COALESCE(SUM(amount_ngn),0) FROM orders WHERE payment_status='paid') AS revenueNgn,(SELECT COUNT(*) FROM users WHERE role='user') AS userCount,(SELECT COUNT(*) FROM users WHERE role='user' AND email_verified=1) AS verifiedUserCount,(SELECT COUNT(*) FROM users WHERE role='user' AND created_at>=date('now','start of month')) AS newUserCount").get();
     return sendJson(res, 200, stats);
   }
   if (req.method === 'GET' && url.pathname === '/api/admin/orders') return sendJson(res, 200, filteredOrders(url));
@@ -307,6 +398,12 @@ function filteredOrders(url) {
 }
 
 function csvEscape(v) { const s = String(v ?? ''); return /[\",\\n]/.test(s) ? `\"${s.replace(/\"/g, '\"\"')}\"` : s; }
+function getRequestOrigin(req, url) {
+  if (SITE_URL) return SITE_URL.replace(/\/$/, '');
+  const proto = String(req.headers['x-forwarded-proto'] || url.protocol.replace(':', '') || 'http');
+  const host = String(req.headers['x-forwarded-host'] || req.headers.host || 'localhost:3000');
+  return `${proto}://${host}`.replace(/\/$/, '');
+}
 async function sendEmail(to, subject, text) {
   const line = `[${new Date().toISOString()}] to=${to} subject=${subject} text=${text}\\n`;
   if (SMTP_USER && SMTP_PASS) {

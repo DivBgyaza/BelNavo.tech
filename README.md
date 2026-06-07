@@ -6,6 +6,7 @@ It includes:
 - user signup and login
 - email verification with a 6-digit code
 - booking and payment tracking
+- card payments through Flutterwave
 - admin dashboard
 - user management
 - audit logs
@@ -38,13 +39,19 @@ Create a `.env` file in the project root:
 
 ```env
 PORT=3000
+SITE_URL=https://your-domain-or-render-url.com
+DATA_DIR=/opt/render/project/src/storage
 OWNER_EMAIL=belnavo.tech@gmail.com
 SMTP_USER=belnavo.tech@gmail.com
 SMTP_PASS=your-gmail-app-password
 SMTP_FROM=BelNavo tech <belnavo.tech@gmail.com>
+FLW_PUBLIC_KEY=your-flutterwave-public-key
+FLW_SECRET_KEY=your-flutterwave-secret-key
+FLW_SECRET_HASH=your-flutterwave-webhook-hash
 ```
 
 If SMTP is not configured, the app still works and logs emails locally to `data/mail.log`.
+If Flutterwave keys are not configured, the card checkout button will stay disabled.
 
 ## Main Features
 
@@ -60,6 +67,7 @@ If SMTP is not configured, the app still works and logs emails locally to `data/
 - Create service bookings
 - Track payment status
 - Bank transfer flow
+- Card payment flow
 - Booking notifications to the official email
 
 ### Admin Dashboard
@@ -99,3 +107,4 @@ If you need to explain the project, you can say:
 
 - The project is ready for GitHub deployment.
 - Private runtime files like `.env`, logs, `data/`, and `node_modules/` are ignored.
+- For online hosting, Render can run the Node app and keep SQLite data on a persistent disk.
