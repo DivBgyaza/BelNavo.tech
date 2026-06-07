@@ -236,25 +236,44 @@ async function handleApi(req, res, url) {
     db.prepare("UPDATE orders SET payment_status='pending_card',status='in_progress',updated_at=? WHERE id=?").run(now, order.id);
     addNotification(order.userId, 'card_payment_started', `Card checkout started for ${order.bookingCode}.`);
     addAudit(session.user.id, 'card_payment_initialized', 'order', order.id, { txRef });
+    const initRes = await fetch('https://api.flutterwave.com/v3/payments', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${FLW_SECRET_KEY}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        amount: order.amountNgn,
+        tx_ref: txRef,
+        currency: 'NGN',
+        redirect_url: redirectUrl,
+        payment_options: 'card',
+        customer: {
+          name: order.customerName || session.user.fullName,
+          email: order.email || session.user.email,
+          phone_number: order.phone || session.user.phone || '',
+        },
+        customizations: {
+          title: 'BelNavo tech',
+          description: `Payment for ${order.bookingCode}`,
+          logo: new URL('/assets/belnavo-logo.png', origin).toString(),
+        },
+        meta: { orderId: order.id, bookingCode: order.bookingCode },
+        configuration: { session_duration: 30 },
+      }),
+    });
+    const initJson = await initRes.json().catch(() => null);
+    if (!initRes.ok || !initJson || initJson.status !== 'success' || !initJson.data?.link) {
+      db.prepare("UPDATE orders SET payment_status='payment_failed',updated_at=? WHERE id=?").run(new Date().toISOString(), order.id);
+      return sendJson(res, 400, { error: initJson?.message || 'Unable to create Flutterwave checkout link.' });
+    }
+    db.prepare('UPDATE payments SET receipt_url=? WHERE reference=?').run(String(initJson.data.link), txRef);
     return sendJson(res, 200, {
       success: true,
       txRef,
-      paymentUrl: 'https://checkout.flutterwave.com/v3/hosted/pay',
-      publicKey: FLW_PUBLIC_KEY,
-      amount: order.amountNgn,
-      currency: 'NGN',
+      link: initJson.data.link,
       redirectUrl,
-      customer: {
-        name: order.customerName || session.user.fullName,
-        email: order.email || session.user.email,
-        phone_number: order.phone || session.user.phone || '',
-      },
-      meta: { orderId: order.id, bookingCode: order.bookingCode },
-      customizations: {
-        title: 'BelNavo tech',
-        description: `Payment for ${order.bookingCode}`,
-        logo: new URL('/assets/belnavo-logo.png', origin).toString(),
-      },
     });
   }
   if (req.method === 'POST' && url.pathname === '/api/payments/card/verify') {
