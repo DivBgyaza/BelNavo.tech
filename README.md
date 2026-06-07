@@ -4,7 +4,6 @@ BelNavo tech is a service booking website for design, web, branding, motion, and
 
 It includes:
 - user signup and login
-- email verification with a 6-digit code
 - booking and payment tracking
 - card payments through Flutterwave
 - admin dashboard
@@ -58,7 +57,6 @@ If Flutterwave keys are not configured, the card checkout button will stay disab
 ### Authentication
 
 - Register new users
-- Email verification before account activation
 - Login and logout
 - Forgot password and reset password
 
@@ -101,7 +99,7 @@ The backend exposes endpoints such as:
 
 If you need to explain the project, you can say:
 
-> "BelNavo tech uses a custom Node.js backend with SQLite to manage users, bookings, payments, and admin workflows. The frontend talks to the backend through API endpoints, and email verification is used before a new account becomes active."
+> "BelNavo tech uses a custom Node.js backend with SQLite to manage users, bookings, payments, and admin workflows. The frontend talks to the backend through API endpoints, and new accounts are created instantly with secure login afterwards."
 
 ## Repository Notes
 
@@ -131,7 +129,7 @@ If you need to explain the project, you can say:
 6. In Flutterwave dashboard, set the webhook URL to:
    - `https://your-render-url.onrender.com/api/payments/flutterwave/webhook`
 7. After deploy, test:
-   - signup and email verification
+   - signup and login
    - login
    - booking creation
    - card checkout
