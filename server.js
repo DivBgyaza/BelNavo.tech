@@ -303,6 +303,46 @@ async function handleApi(req, res, url) {
     addAudit(session?.user?.id || null, 'card_payment_verified', 'order', payment.orderId, { txRef, transactionId });
     return sendJson(res, 200, { success: true, bookingCode: payment.bookingCode, amount: payment.expectedAmount });
   }
+  if (req.method === 'POST' && url.pathname === '/api/payments/flutterwave/webhook') {
+    const signature = String(req.headers['verif-hash'] || req.headers['flutterwave-signature'] || '').trim();
+    if (!FLW_SECRET_HASH || !signature || signature !== FLW_SECRET_HASH) return sendJson(res, 401, { error: 'Invalid webhook signature.' });
+    const raw = await readRawBody(req);
+    let payload = null;
+    try { payload = JSON.parse(raw || '{}'); } catch { return sendJson(res, 400, { error: 'Invalid webhook payload.' }); }
+    const data = payload?.data || {};
+    const txRef = String(data.tx_ref || data.txRef || '').trim();
+    const transactionId = Number(data.id || 0);
+    const eventType = String(payload?.type || '').toLowerCase();
+    if (!txRef || !transactionId) return sendJson(res, 200, { success: true, ignored: true });
+    if (!['charge.completed', 'transaction.completed', 'payment.completed'].includes(eventType)) return sendJson(res, 200, { success: true, ignored: true });
+    const payment = db.prepare(`
+      SELECT p.id AS paymentId,p.order_id AS orderId,p.reference AS txRef,p.amount_ngn AS expectedAmount,p.status AS paymentStatus,
+      o.booking_code AS bookingCode,o.user_id AS userId,o.email,o.customer_name AS customerName
+      FROM payments p JOIN orders o ON o.id=p.order_id
+      WHERE p.reference=? AND p.provider='FLUTTERWAVE_CARD'
+    `).get(txRef);
+    if (!payment) return sendJson(res, 200, { success: true, ignored: true });
+    if (String(payment.paymentStatus) === 'paid') return sendJson(res, 200, { success: true, alreadyProcessed: true });
+    const verifyRes = await fetch(`https://api.flutterwave.com/v3/transactions/${transactionId}/verify`, {
+      headers: { Authorization: `Bearer ${FLW_SECRET_KEY}`, Accept: 'application/json' },
+    });
+    const verifyJson = await verifyRes.json().catch(() => null);
+    if (!verifyRes.ok || !verifyJson || verifyJson.status !== 'success' || !verifyJson.data) return sendJson(res, 200, { success: true, ignored: true });
+    const tx = verifyJson.data;
+    const txCurrency = String(tx.currency || '').toUpperCase();
+    const amountOk = Number(tx.amount) >= Number(payment.expectedAmount);
+    const statusOk = String(tx.status || '').toLowerCase() === 'successful';
+    const refOk = String(tx.tx_ref || '').trim() === txRef;
+    if (!statusOk || !amountOk || txCurrency !== 'NGN' || !refOk) return sendJson(res, 200, { success: true, ignored: true });
+    const now = new Date().toISOString();
+    db.prepare("UPDATE payments SET status='paid',paid_at=? WHERE id=?").run(now, payment.paymentId);
+    db.prepare("UPDATE orders SET payment_status='paid',status='confirmed',updated_at=? WHERE id=?").run(now, payment.orderId);
+    addNotification(payment.userId, 'payment_confirmed', `Card payment confirmed for ${payment.bookingCode}.`);
+    sendEmail(payment.email, 'Card Payment Confirmed', `Your card payment for booking ${payment.bookingCode} has been confirmed.`);
+    sendEmail(OWNER_EMAIL, 'Card Payment Confirmed', `Card payment confirmed for ${payment.bookingCode} (${payment.customerName}).`);
+    addAudit(null, 'flutterwave_webhook_verified', 'order', payment.orderId, { txRef, transactionId });
+    return sendJson(res, 200, { success: true });
+  }
 
   if (session.user.role !== 'admin') return sendJson(res, 403, { error: 'Admin access required.' });
 
@@ -403,6 +443,20 @@ function getRequestOrigin(req, url) {
   const proto = String(req.headers['x-forwarded-proto'] || url.protocol.replace(':', '') || 'http');
   const host = String(req.headers['x-forwarded-host'] || req.headers.host || 'localhost:3000');
   return `${proto}://${host}`.replace(/\/$/, '');
+}
+function readRawBody(req) {
+  return new Promise((resolve, reject) => {
+    let body = '';
+    req.on('data', (chunk) => {
+      body += chunk;
+      if (body.length > 1e6) {
+        req.socket.destroy();
+        reject(new Error('Request body too large'));
+      }
+    });
+    req.on('end', () => resolve(body));
+    req.on('error', reject);
+  });
 }
 async function sendEmail(to, subject, text) {
   const line = `[${new Date().toISOString()}] to=${to} subject=${subject} text=${text}\\n`;

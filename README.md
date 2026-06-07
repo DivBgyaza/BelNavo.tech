@@ -108,3 +108,39 @@ If you need to explain the project, you can say:
 - The project is ready for GitHub deployment.
 - Private runtime files like `.env`, logs, `data/`, and `node_modules/` are ignored.
 - For online hosting, Render can run the Node app and keep SQLite data on a persistent disk.
+
+## Deploy To Render
+
+1. Push the latest code to GitHub.
+2. Create a new Render Web Service from the `BelNavo.tech` repository.
+3. Use the settings from [`render.yaml`](/C:/Users/USER/Documents/New%20project/render.yaml):
+   - build command: `npm install`
+   - start command: `npm start`
+4. Add environment variables in Render:
+   - `PORT=3000`
+   - `SITE_URL=https://your-render-url.onrender.com`
+   - `DATA_DIR=/opt/render/project/src/storage`
+   - `OWNER_EMAIL=belnavo.tech@gmail.com`
+   - `SMTP_USER=belnavo.tech@gmail.com`
+   - `SMTP_PASS=your-gmail-app-password`
+   - `SMTP_FROM=BelNavo tech <belnavo.tech@gmail.com>`
+   - `FLW_PUBLIC_KEY=...`
+   - `FLW_SECRET_KEY=...`
+   - `FLW_SECRET_HASH=...`
+5. Add a persistent disk if Render does not auto-attach one.
+6. In Flutterwave dashboard, set the webhook URL to:
+   - `https://your-render-url.onrender.com/api/payments/flutterwave/webhook`
+7. After deploy, test:
+   - signup and email verification
+   - login
+   - booking creation
+   - card checkout
+   - bank transfer
+   - admin confirmation
+
+### Suggested order
+
+- Deploy backend first
+- Confirm the live URL works
+- Then configure Flutterwave webhook
+- Finally test a live card payment
