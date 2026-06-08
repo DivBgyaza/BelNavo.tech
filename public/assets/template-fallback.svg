@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-label="BelNavo tech template placeholder">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" rx="32" fill="#0b1220"/>
+  <rect x="70" y="70" width="1060" height="660" rx="28" fill="url(#g)" opacity=".18"/>
+  <circle cx="600" cy="320" r="110" fill="url(#g)" opacity=".75"/>
+  <path d="M530 255h140v35H575v55h95v35h-95v105h-45z" fill="#fff" opacity=".95"/>
+  <text x="600" y="535" fill="#e6eef8" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="52" font-weight="700">BelNavo tech</text>
+  <text x="600" y="590" fill="#94a3b8" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="24">Template preview</text>
+</svg>
