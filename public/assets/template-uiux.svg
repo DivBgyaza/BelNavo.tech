@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-label="UI UX design preview">
+  <defs>
+    <linearGradient id="a" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" rx="36" fill="#0b1220"/>
+  <rect x="70" y="70" width="1060" height="660" rx="28" fill="url(#a)" opacity=".15"/>
+  <rect x="150" y="140" width="900" height="72" rx="20" fill="#e6eef8" opacity=".9"/>
+  <rect x="150" y="250" width="520" height="340" rx="28" fill="#111a2d" stroke="#7c3aed" stroke-width="4"/>
+  <rect x="720" y="250" width="330" height="140" rx="24" fill="#111a2d" stroke="#06b6d4" stroke-width="4"/>
+  <rect x="720" y="418" width="330" height="172" rx="24" fill="#111a2d" stroke="#7c3aed" stroke-width="4"/>
+  <circle cx="250" cy="340" r="34" fill="url(#a)"/>
+  <circle cx="250" cy="435" r="34" fill="url(#a)" opacity=".7"/>
+  <circle cx="250" cy="530" r="34" fill="url(#a)" opacity=".45"/>
+  <text x="600" y="690" fill="#e6eef8" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="56" font-weight="700">UI / UX Design</text>
+</svg>

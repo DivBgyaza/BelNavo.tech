@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-label="Digital products preview">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1d4ed8"/>
+      <stop offset="100%" stop-color="#9333ea"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" rx="36" fill="#0b1220"/>
+  <rect x="80" y="80" width="1040" height="640" rx="30" fill="url(#g)" opacity=".18"/>
+  <rect x="170" y="150" width="860" height="420" rx="30" fill="#111a2d" stroke="#2dd4bf" stroke-width="4"/>
+  <path d="M240 470h720" stroke="#e6eef8" stroke-width="18" stroke-linecap="round" opacity=".3"/>
+  <path d="M240 390h540" stroke="#e6eef8" stroke-width="18" stroke-linecap="round" opacity=".3"/>
+  <path d="M240 310h650" stroke="#e6eef8" stroke-width="18" stroke-linecap="round" opacity=".3"/>
+  <rect x="240" y="215" width="260" height="58" rx="18" fill="#06b6d4"/>
+  <text x="500" y="680" fill="#e6eef8" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="56" font-weight="700">Digital Products</text>
+</svg>

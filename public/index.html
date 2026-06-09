@@ -95,6 +95,7 @@
         <div class="toolbar">
           <button class="pill active" data-template-filter="all">All</button>
           <button class="pill" data-template-filter="starter-site">Web</button>
+          <button class="pill" data-template-filter="uiux-design">UI/UX</button>
           <button class="pill" data-template-filter="brand-motion">Branding</button>
           <button class="pill" data-template-filter="ecommerce-store">E-commerce</button>
         </div>
@@ -204,14 +205,17 @@ const templateLibrary=[
   {slug:'starter-site',title:'Agency Showcase',desc:'Service-led layout with case-study sections and CTA blocks.',img:'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80'},
   {slug:'starter-site',title:'Creative Portfolio',desc:'A polished template for designers and motion artists.',img:'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80'},
   {slug:'starter-site',title:'Business Landing Page',desc:'A conversion-focused layout for local businesses.',img:'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80'},
+  {slug:'uiux-design',title:'Dashboard UX System',desc:'Clean task flows, component states, and product dashboards.',img:'/assets/template-uiux.svg'},
+  {slug:'uiux-design',title:'Mobile App Flow',desc:'App screens, navigation structure, and user journey maps.',img:'https://images.unsplash.com/photo-1512941937669-90a1b58e0f5f?auto=format&fit=crop&w=1200&q=80'},
+  {slug:'uiux-design',title:'Prototype Sprint Kit',desc:'Rapid prototypes for testing before full development.',img:'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80'},
   {slug:'brand-motion',title:'Brand Kit System',desc:'Logo direction, colors, typography and brand usage.',img:'https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1200&q=80'},
   {slug:'brand-motion',title:'Motion Intro Pack',desc:'Short animated intros for reels, ads and product promos.',img:'https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&w=1200&q=80'},
   {slug:'brand-motion',title:'Social Launch Kit',desc:'Ready-to-post visuals for announcement campaigns.',img:'https://images.unsplash.com/photo-1545239351-1141bd82e8a6?auto=format&fit=crop&w=1200&q=80'},
-  {slug:'brand-motion',title:'Identity Refresh Pack',desc:'A complete visual refresh for an existing brand.',img:'https://images.unsplash.com/photo-1511453679205-3c4b4d9c2b2a?auto=format&fit=crop&w=1200&q=80'},
+  {slug:'brand-motion',title:'Identity Refresh Pack',desc:'A complete visual refresh for an existing brand.',img:'/assets/template-uiux.svg'},
   {slug:'ecommerce-store',title:'Fashion Store Template',desc:'A stylish store layout for products and collections.',img:'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1200&q=80'},
   {slug:'ecommerce-store',title:'Electronics Store Template',desc:'Feature-heavy storefront for gadgets and devices.',img:'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=1200&q=80'},
   {slug:'ecommerce-store',title:'Beauty Shop Template',desc:'Soft, premium layout for beauty and skincare brands.',img:'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=1200&q=80'},
-  {slug:'ecommerce-store',title:'Digital Products Store',desc:'Selling downloads, packages and subscriptions.',img:'https://images.unsplash.com/photo-1556742400-b5d1a0b7a8a3?auto=format&fit=crop&w=1200&q=80'}
+  {slug:'ecommerce-store',title:'Digital Products Store',desc:'Selling downloads, packages and subscriptions.',img:'/assets/template-digital.svg'}
 ];
 const set=(id,m,ok=true)=>{const e=q(id);e.textContent=m;e.className=`status ${m?(ok?'ok':'error'):''}`};
 
@@ -251,7 +255,7 @@ async function boot(){
   const [cfgR,svcR]=await Promise.all([fetch('/api/config'),fetch('/api/services')]);
   const cfg=await cfgR.json(),sv=await svcR.json();
   q('#emailStatus').textContent=`Email: ${cfg.mail?.smtpEnabled ? `SMTP connected (${cfg.mail.fromEmail})` : 'fallback logging only (set SMTP_PASS in .env)'} · Card payments: ${cfg.payments?.cardEnabled ? 'enabled' : 'not configured yet'}`;
-  const media={'starter-site':'https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?auto=format&fit=crop&w=900&q=60','ecommerce-store':'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=900&q=60','brand-motion':'https://images.unsplash.com/photo-1572044162444-ad60f128bdea?auto=format&fit=crop&w=900&q=60'};
+  const media={'starter-site':'https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?auto=format&fit=crop&w=900&q=60','uiux-design':'/assets/template-uiux.svg','ecommerce-store':'/assets/template-digital.svg','brand-motion':'https://images.unsplash.com/photo-1572044162444-ad60f128bdea?auto=format&fit=crop&w=900&q=60'};
   q('#servicesGrid').innerHTML=sv.map(x=>`<div class='card'><img class='service-media' src='${media[x.slug]||media['starter-site']}' loading='lazy' onerror="this.onerror=null;this.src='/assets/template-fallback.svg'"><h3>${esc(x.name)}</h3><p class='muted'>${esc(x.description)}</p><strong>${ngn(x.priceNgn)}</strong><div class='muted'>${x.durationDays} days</div></div>`).join('');
   renderTemplates('all');
   const opts=['<option value="">Select service</option>'].concat(sv.map(x=>`<option value='${x.id}'>${esc(x.name)} - ${ngn(x.priceNgn)}</option>`));
